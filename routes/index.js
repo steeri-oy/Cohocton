@@ -17,6 +17,8 @@ Trello = rest.service(function() {
 var client = new Trello();
 
 function getReviewCards(req, res) {
+  req.accepts('json, text');
+  res.type('json');
   switch(req.params.product) {
     case 'dialog':
       client.cards(process.env.DIALOG_REVIEW_LIST_ID).on('complete', function(data) {
@@ -24,16 +26,18 @@ function getReviewCards(req, res) {
       });
       break;
     case 'cdm':
-      res.send({error: 'No URL for CDM configured'});
+      console.error('No URL for CDM configured');
+      res.send({});
       break;
     default:
-      res.send({error: 'No product specified'});
+      console.error('No priduct given, can\'t get cards');
+      res.send({});
 
   }
 }
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Open review cards' });
 };
 
 exports.reviews = getReviewCards;

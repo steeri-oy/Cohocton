@@ -1,5 +1,26 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+    h1= title
+    div(ng-controller='CardsController')
+
+      h2 Dialog
+      ul
+        li(ng-repeat='card in dialog')
+          |  {{card.name}}
+
+      h2 CDM
+      ul
+        li(ng-repeat='card in cdm')
+          |  {{card}}
+
+    script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js')
+    script(type='text/javascript').
+      function CardsController($scope, $http) {
+        $http.get('reviews/dialog').success( function(data, statuts, headers, config) {
+          $scope.dialog = data;
+        });
+        $http.get('reviews/cdm').success( function(data, statuts, headers, config) {
+          $scope.cdm = data;
+        });
+      }
