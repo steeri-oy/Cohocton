@@ -3,22 +3,37 @@ var rest = require('restler');
  * GET home page.
  */
 
+Trello = rest.service(function() {
+  this.key = process.env.TRELLO_API_KEY;
+  this.token = process.env.TRELLO_API_TOKEN;
+}, {
+  baseURL: process.env.TRELLO_API_URL
+}, {
+  cards: function(list_id) {
+    return this.get('lists/'+list_id+'/cards', {query: {key: this.key, token: this.token}});
+  }
+});
+
+var client = new Trello();
+
+function getReviewCards(req, res) {
+  switch(req.params.product) {
+    case 'dialog':
+      client.cards(process.env.DIALOG_REVIEW_LIST_ID).on('complete', function(data) {
+        res.send(data);
+      });
+      break;
+    case 'cdm':
+      res.send({error: 'No URL for CDM configured'});
+      break;
+    default:
+      res.send({error: 'No product specified'});
+
+  }
+}
+
 exports.index = function(req, res){
   res.render('index', { title: 'Express' });
 };
 
-exports.reviews = function(req, res){
-  console.log(req.params.product);
-  switch(req.params.product) {
-    case 'dialog':
-      rest.get(process.env.TRELLO_API_URL+'lists/'+process.env.DIALOG_REVIEW_LIST_ID+, {query:{key: process.env.TRELLO_API_KEY, token: process.env.TRELLO_API_TOKEN}}).on('complete', function(data) {
-        console.log(data);
-      });
-      break;
-    case 'cdm':
-      break;
-    default:
-      console.error('No product specifed');
-  }
-  res.send("Get reveiws for passed product");
-};
+exports.reviews = getReviewCards;
