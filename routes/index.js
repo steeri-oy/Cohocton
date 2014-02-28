@@ -27,11 +27,11 @@ function getReviewCards(req, res) {
       break;
     case 'cdm':
       console.error('No URL for CDM configured');
-      res.send({});
+      res.send([]);
       break;
     default:
       console.error('No priduct given, can\'t get cards');
-      res.send({});
+      res.send([]);
 
   }
 }
