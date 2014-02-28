@@ -1,31 +1,43 @@
 extends layout
 
 block content
-    h1= title
+    h2= title
     div(ng-controller='CardsController')
 
       div(ng-show='dialog.length')
-      h2 Dialog
-      ul
-        li(ng-repeat='card in dialog')
-          |  {{card.name}} - Tasks done: {{card.badges.checkItemsChecked}}/{{card.badges.checkItems}}
+        h4 Dialog
+        ul
+          li(ng-repeat='card in dialog')
+            |  {{card.name}} - Tasks done: {{card.badges.checkItemsChecked}}/{{card.badges.checkItems}}
 
       div(ng-show='cdm.length')
-        h2 CDM
+        h4 CDM
         ul
           li(ng-repeat='card in cdm')
-            |  {{card}} - Tasks done: {{card.badges.checkItemsChecked}}/{{card.badges.checkItems}}
+            |  {{card.name}} - Tasks done: {{card.badges.checkItemsChecked}}/{{card.badges.checkItems}}
 
     script(src='/components/angular/angular.min.js')
-    script(src='/components/underscore/underscore.js')
     script(type='text/javascript').
-      function CardsController($scope, $http) {
-        $http.get('reviews/dialog').success( function(data, statuts, headers, config) {
-          $scope.dialog = data;
-          $scope.dialog.splice(0,1);
-        });
-        $http.get('reviews/cdm').success( function(data, statuts, headers, config) {
-          $scope.cdm = data;
-          $scope.cdm.splice(0,1);
-        });
+      function CardsController($scope, $http, $timeout) {
+        $scope.getData = function() {
+          $http.get('reviews/dialog').success( function(data, statuts, headers, config) {
+            $scope.dialog = data;
+            $scope.dialog.splice(0,1);
+          });
+
+          $http.get('reviews/cdm').success( function(data, statuts, headers, config) {
+            $scope.cdm = data;
+            $scope.cdm.splice(0,1);
+          });
+        };
+
+        $scope.intervalFunction = function() {
+          $timeout(function() {
+            $scope.getData();
+            $scope.intervalFunction();
+            }, 60000)
+        };
+
+        $scope.getData();
+        $scope.intervalFunction();
       }

@@ -22,13 +22,13 @@ function getReviewCards(req, res) {
   switch(req.params.product) {
     case 'dialog':
       client.cards(process.env.DIALOG_REVIEW_LIST_ID).on('complete', function(data) {
-        console.log(data);
         res.send(data);
       });
       break;
     case 'cdm':
-      console.error('No URL for CDM configured');
-      res.send([]);
+      client.cards(process.env.CDM_REVIEW_LIST_ID).on('complete', function(data) {
+        res.send(data);
+      });
       break;
     default:
       console.error('No priduct given, can\'t get cards');
