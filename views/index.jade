@@ -8,13 +8,13 @@ block content
       h2 Dialog
       ul
         li(ng-repeat='card in dialog')
-          |  {{card.name}}
+          |  {{card.name}} - Tasks done: {{card.badges.checkItemsChecked}}/{{card.badges.checkItems}}
 
       div(ng-show='cdm.length')
         h2 CDM
         ul
           li(ng-repeat='card in cdm')
-            |  {{card}}
+            |  {{card}} - Tasks done: {{card.badges.checkItemsChecked}}/{{card.badges.checkItems}}
 
     script(src='/components/angular/angular.min.js')
     script(src='/components/underscore/underscore.js')

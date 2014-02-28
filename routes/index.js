@@ -22,6 +22,7 @@ function getReviewCards(req, res) {
   switch(req.params.product) {
     case 'dialog':
       client.cards(process.env.DIALOG_REVIEW_LIST_ID).on('complete', function(data) {
+        console.log(data);
         res.send(data);
       });
       break;
