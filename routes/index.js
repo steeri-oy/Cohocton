@@ -3,22 +3,42 @@ var rest = require('restler');
  * GET home page.
  */
 
-exports.index = function(req, res){
-  res.render('index', { title: 'Express' });
-};
+Trello = rest.service(function() {
+  this.key = process.env.TRELLO_API_KEY;
+  this.token = process.env.TRELLO_API_TOKEN;
+}, {
+  baseURL: process.env.TRELLO_API_URL
+}, {
+  cards: function(list_id) {
+    return this.get('lists/'+list_id+'/cards', {query: {key: this.key, token: this.token}});
+  }
+});
 
-exports.reviews = function(req, res){
-  console.log(req.params.product);
+var client = new Trello();
+
+function getReviewCards(req, res) {
+  req.accepts('json, text');
+  res.type('json');
   switch(req.params.product) {
     case 'dialog':
-      rest.get(process.env.TRELLO_API_URL+'lists/'+process.env.DIALOG_REVIEW_LIST_ID+, {query:{key: process.env.TRELLO_API_KEY, token: process.env.TRELLO_API_TOKEN}}).on('complete', function(data) {
-        console.log(data);
+      client.cards(process.env.DIALOG_REVIEW_LIST_ID).on('complete', function(data) {
+        res.send(data);
       });
       break;
     case 'cdm':
+      client.cards(process.env.CDM_REVIEW_LIST_ID).on('complete', function(data) {
+        res.send(data);
+      });
       break;
     default:
-      console.error('No product specifed');
+      console.error('No priduct given, can\'t get cards');
+      res.send([]);
+
   }
-  res.send("Get reveiws for passed product");
+}
+
+exports.index = function(req, res){
+  res.render('index', { title: 'Open review cards' });
 };
+
+exports.reviews = getReviewCards;
